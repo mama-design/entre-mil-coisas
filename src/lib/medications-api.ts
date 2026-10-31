@@ -1,0 +1,7 @@
+import {supabase} from './supabase';
+export type MedicationLog={id:string,kind:'application'|'expense',date:string,time:string,medication:string,dose:string,amount:number,notes:string};
+async function user(){const {data,error}=await supabase.auth.getUser();if(error||!data.user)throw Error('Entre novamente no teu espaço.');return data.user.id}
+const fields='id,kind,date,time,medication,dose,amount,notes';
+export async function loadMedications(){const id=await user();const {data,error}=await supabase.from('emc_medication_logs').select(fields).eq('user_id',id).order('date',{ascending:false}).order('time',{ascending:false});if(error)throw Error('Não consegui abrir os registros. Tenta novamente.');return data as MedicationLog[]}
+export async function saveMedication(log:MedicationLog){const id=await user();const {id:record,...fieldsToSave}=log;const row={...fieldsToSave,user_id:id,updated_at:new Date().toISOString()};const query=record?supabase.from('emc_medication_logs').update(row).eq('id',record).eq('user_id',id):supabase.from('emc_medication_logs').insert(row);const {data,error}=await query.select(fields).single();if(error)throw Error('Não consegui salvar. Confere os campos e tenta novamente.');return data as MedicationLog}
+export async function deleteMedication(id:string){const owner=await user();const {data,error}=await supabase.from('emc_medication_logs').delete().eq('id',id).eq('user_id',owner).select('id').single();if(error||!data)throw Error('Não consegui excluir o registro. Tenta novamente.')}
