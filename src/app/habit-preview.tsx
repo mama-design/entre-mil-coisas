@@ -1,0 +1,13 @@
+'use client';
+import {apiFetch as fetch} from '../lib/api';
+import {useEffect,useState} from 'react';
+import {ArrowRight,Sun,Check,Loader2} from 'lucide-react';
+import {Habit,HabitLog,scheduled} from '../lib/habits';
+import {SymbolIcon} from './symbol';
+export default function HabitPreview({today,onOpen}:{today:string,onOpen:()=>void}){
+const [habits,setHabits]=useState<Habit[]>([]),[logs,setLogs]=useState<HabitLog[]>([]),[busy,setBusy]=useState(''),[error,setError]=useState(''),[loading,setLoading]=useState(true);
+useEffect(()=>{let live=true;fetch('/api/habits').then(async r=>{if(!r.ok)throw Error();return await r.json() as {habits:Habit[],logs:HabitLog[]}}).then(data=>{if(live){setHabits(data.habits.filter(h=>!h.archived&&scheduled(h,today)));setLogs(data.logs)}}).catch(()=>{if(live)setError('Abra a Rotina para consultar teus hábitos.')}).finally(()=>{if(live)setLoading(false)});return()=>{live=false}},[today]);
+async function toggle(h:Habit){if(busy)return;const done=logs.some(l=>l.habitId===h.id&&l.date===today);setBusy(h.id);setError('');try{const r=await fetch('/api/habits',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:h.id,date:today,done:!done})});if(!r.ok)throw Error();setLogs(prev=>done?prev.filter(l=>!(l.habitId===h.id&&l.date===today)):[...prev,{habitId:h.id,date:today}])}catch{setError('Não consegui registrar. Tenta de novo.')}finally{setBusy('')}}
+return <section className="habit-preview"><div className="section-title"><h2>Meu hábito</h2><span>TODO DIA</span><button aria-label="Abrir rotina" onClick={onOpen}><ArrowRight size={21}/></button></div>
+{loading?<div className="habit-preview-paper"><Loader2 className="spin" size={18}/><span>Abrindo teus hábitos…</span></div>:habits.length?habits.slice(0,2).map(h=><div className="habit-preview-paper" key={h.id}><span className="preview-symbol"><SymbolIcon name={h.icon} size={29}/></span><button className="habit-preview-title" onClick={onOpen}><strong>{h.title}</strong></button><button className={'habit-preview-check '+(logs.some(l=>l.habitId===h.id&&l.date===today)?'done':'')} aria-label={(logs.some(l=>l.habitId===h.id&&l.date===today)?'Desfazer':'Concluir')+' hábito '+h.title} disabled={!!busy} onClick={()=>toggle(h)}>{busy===h.id?<Loader2 className="spin" size={16}/>:logs.some(l=>l.habitId===h.id&&l.date===today)?<Check size={22}/>:null}</button></div>):<button className="habit-preview-paper no-habits" onClick={onOpen}><Sun className="habit-sun" size={35}/><span><strong>Um espaço só teu.</strong><small>ESCOLHER MEUS HÁBITOS →</small></span><span className="yellow-scrap">PEQUENOS<br/>PASSOS<br/>CONTAM.</span></button>}
+{error&&<p role="alert" className="habit-hint">{error}</p>}</section>}

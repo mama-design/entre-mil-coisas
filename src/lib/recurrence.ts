@@ -1,0 +1,5 @@
+export type Entry={id:string,title:string,date:string,time:string,category:string,notes:string,reminder:number,done:number,repeatDays:string,occurrenceDate?:string};
+export const dateKey=(d:Date)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+export const parse=(s:string)=>new Date(s+'T12:00:00');
+export const daysBetween=(a:string,b:string)=>{const utc=(s:string)=>{const [y,m,d]=s.split('-').map(Number);return Date.UTC(y,m-1,d)};return (utc(a)-utc(b))/86400000};
+export function expand(entries:Entry[],from:string,to:string,checked:Set<string>){const out:Entry[]=[];for(const e of entries){if(!e.repeatDays){if(e.date>=from&&e.date<=to)out.push(e);continue}const days=e.repeatDays.split(',').map(Number);for(let d=parse(from>e.date?from:e.date);dateKey(d)<=to;d.setDate(d.getDate()+1)){const date=dateKey(d);if(days.includes(d.getDay()))out.push({...e,date,occurrenceDate:date,done:checked.has(e.id+':'+date)?1:0})}}return out.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))}

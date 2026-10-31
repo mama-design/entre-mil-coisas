@@ -1,0 +1,5 @@
+export const symbols=[['none','Sem ícone'],['star','Estrela'],['sparkles','Brilhos'],['heart','Coração'],['flower','Flor'],['leaf','Folha'],['sun','Sol'],['moon','Lua'],['coffee','Café'],['book','Livro'],['pencil','Lápis'],['palette','Criatividade'],['home','Casa'],['bag','Compras'],['gift','Presente'],['calendar','Calendário'],['clock','Relógio'],['check','Check'],['flag','Bandeira'],['target','Meta'],['activity','Movimento'],['bike','Bicicleta'],['dumbbell','Treino'],['drop','Água'],['music','Música'],['cake','Aniversário'],['briefcase','Trabalho'],['users','Pessoas'],['paw','Patinha']] as const;
+export const symbolKeys=symbols.map(s=>s[0]) as string[];
+export type Category={id:string,name:string,color:string,icon:string,position:number};
+export const defaultCategories=[['Pessoal','#9a7557'],['Mariana','#2F4A3A'],['Catarina','#a0883d'],['Casa','#65715b'],['Mama Design','#9b6a53'],['Estamparei','#c47d42'],['Outros','#7d7d70']];
+export function categoryInk(color:string){const rgb=[1,3,5].map(i=>parseInt(color.slice(i,i+2),16));return (rgb[0]*.299+rgb[1]*.587+rgb[2]*.114)>165?'#243d2c':'#fffdf4'}
