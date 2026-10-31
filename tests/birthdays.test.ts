@@ -19,3 +19,13 @@ test('next anniversary crosses year boundary correctly and Feb 29 uses Feb 28 in
  assert.equal(birthdayOccurrence(leap,'2027-01-01').date,'2027-02-28');
  assert.equal(birthdayOccurrence(leap,'2028-01-01').date,'2028-02-29');
 });
+test('calendar includes birthdays in past and future years with the age of that selected year',async()=>{
+ const {birthdayOnDate}=await import('../src/lib/birthdays.ts');
+ assert.equal(birthdayOnDate(b,'2026-06-15'),true);
+ assert.equal(birthdayOnDate(b,'2027-06-15'),true);
+ assert.equal(birthdayOnDate(b,'2026-06-14'),false);
+ assert.equal(birthdayOnDate(b,'2019-06-15'),false);
+ assert.equal(birthdayOnDate({...b,birth_year:null},'2019-06-15'),true);
+ assert.equal(birthdayOccurrence(b,'2027-06-15').age,7);
+ assert.equal(birthdayOnDate({...b,birth_month:2,birth_day:29},'2027-02-28'),true);
+});
