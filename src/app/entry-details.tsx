@@ -1,0 +1,12 @@
+import {useEffect,useRef} from 'react';
+import {createPortal} from 'react-dom';
+import {X,Pencil,CalendarDays,Clock,Repeat2,Bell,NotebookPen} from 'lucide-react';
+import {Entry,parse} from '../lib/recurrence';
+import {Category} from '../lib/symbols';
+import {recurrenceDays} from './recurrences';
+export default function EntryDetails({entry,category,onClose,onEdit}:{entry:Entry,category?:Category,onClose:()=>void,onEdit:()=>void}){
+const closeRef=useRef<HTMLButtonElement>(null);
+useEffect(()=>{closeRef.current?.focus()},[]);
+useEffect(()=>{const key=(e:KeyboardEvent)=>{if(e.key==='Escape')onClose()};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)},[onClose]);
+return createPortal(<div className="overlay"><section className="sheet entry-details" role="dialog" aria-modal="true" aria-labelledby="entry-details-title"><header><div><p className="eyebrow">UM OLHAR NA TUA ANOTAÇÃO</p><h2 id="entry-details-title">Detalhes da tarefa</h2></div><button ref={closeRef} type="button" aria-label="Fechar detalhes" onClick={onClose}><X/></button></header><div className="form-scroll"><div className="detail-category"><i style={{background:category?.color||'#7d7d70'}}/>{entry.category||'Sem categoria'}</div><h3 className="detail-task-title">{entry.title}</h3><span className={'detail-status '+(entry.done?'done':'')}>{entry.done?'Concluída':'Pendente'}</span><dl className="detail-facts"><div><dt><CalendarDays size={17}/>{entry.date?'Dia':'Quando fazer'}</dt><dd>{entry.date?parse(entry.date).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):'Sem data · fica aqui até tu concluir'}</dd></div>{entry.date&&<div><dt><Clock size={17}/>Horário</dt><dd>{entry.time||'Sem horário definido'}</dd></div>}{entry.repeatDays&&<div><dt><Repeat2 size={17}/>Repete</dt><dd>{recurrenceDays(entry.repeatDays)}</dd></div>}{entry.date&&<div><dt><Bell size={17}/>Lembrete na inicial</dt><dd>{entry.reminder>0?entry.reminder+' '+(entry.reminder===1?'dia antes':'dias antes'):'Só no dia, sem aviso antecipado'}</dd></div>}</dl><div className="detail-notes"><h4><NotebookPen size={18}/>Observações</h4><p>{entry.notes||'Nenhuma observação por aqui.'}</p></div></div><footer className="form-footer"><button className="save" type="button" onClick={onEdit}><Pencil size={17}/>Editar tarefa</button><button className="detail-back" type="button" onClick={onClose}>Voltar</button></footer></section></div>,document.body)
+}
