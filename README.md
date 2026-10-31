@@ -3,6 +3,10 @@
 Organizador pessoal da Martina: agenda, tarefas sem data, lembretes antecipados,
 rotinas semanais, hábitos, evolução e categorias personalizáveis.
 
+A aba Geral reúne seções recolhíveis de categorias, recorrências e aniversários.
+Aniversários aparecem na inicial somente no próprio dia e repetem a cada ano.
+O ano de nascimento é opcional; quando informado, a idade se atualiza automaticamente.
+
 Conquistas: contador pessoal sem fumar, economia proporcional ao tempo,
 marcos, histórico de peso e meta opcional, aplicações e gastos de medicamentos.
 Dados pessoais são carregados do banco após autenticação; não são incluídos no fonte.
@@ -22,7 +26,7 @@ O build gera a pasta `docs`. Versionar tanto o fonte quanto o build.
 
 Supabase: login existente da Mama, sessão própria deste app.
 Tabelas exclusivas: `emc_access`, `emc_notebooks`, `emc_achievement_settings`,
-`emc_weight_logs` e `emc_medication_logs`.
+`emc_weight_logs`, `emc_medication_logs` e `emc_birthdays`.
 Somente pessoas explicitamente autorizadas em `emc_access` acessam o próprio caderno.
 A chave no cliente é **publishable**; o acesso aos dados é controlado por RLS.
 Não há chaves administrativas, senhas nem dados pessoais neste repositório.
