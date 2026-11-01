@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import type {Session} from '@supabase/supabase-js';
 import {Eye,EyeOff,ArrowRight,Loader2,LogOut} from 'lucide-react';
 import Notebook from './app/notebook';
+import AppUpdateNotice from './app/app-update-notice';
 import {supabase} from './lib/supabase';
 import './app/globals.css';
 function App(){
@@ -16,4 +17,4 @@ function App(){
  if(session&&allowed)return <div key={session.user.id}><Notebook/><button className="logout-button" onClick={logout} aria-label="Sair do meu espaço" title="Sair"><LogOut size={17}/></button></div>;
  return <main className="login-page"><div className="login-brand">ENTRE MIL COISAS <span>♡</span></div><section className="login-paper"><p className="eyebrow">TEU ESPAÇO PESSOAL</p><h1>Mil coisas.<br/><span>Um lugar só.</span></h1>{session?<><p>Este caderninho é só da Martina. Entre com a conta autorizada.</p>{error&&<p role="alert" className="error">{error}</p>}<button className="save" onClick={logout}>Entrar com outra conta</button></>:<><p>Deixa aqui. Tua cabeça merece uma folga.</p><form onSubmit={login}><label>Teu e-mail<input autoComplete="username" type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="E-mail que tu usa na Mama"/></label><label>Tua senha<div className="password-field"><input autoComplete="current-password" required type={visible?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)}/><button type="button" aria-label={visible?'Esconder senha':'Mostrar senha'} onClick={()=>setVisible(!visible)}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button></div></label>{error&&<p role="alert" className="error">{error}</p>}<button className="save" disabled={busy}>{busy?<Loader2 className="spin" size={18}/>:<ArrowRight size={18}/>} {busy?'Entrando…':'Entrar no meu espaço'}</button></form><small className="login-hint">Usa o mesmo e-mail e senha da tua conta da Mama.</small></>}</section><p className="login-footer">HOJE CABE O QUÊ?</p></main>
 }
-createRoot(document.getElementById('root')!).render(<App/>);
+createRoot(document.getElementById('root')!).render(<><App/><AppUpdateNotice/></>);
