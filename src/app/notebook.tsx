@@ -13,6 +13,7 @@ import GeneralSection from './general-section';
 import {BirthdayList,BirthdayHighlights,BirthdayDetails,BirthdayForm} from './birthdays';
 import {Birthday,birthdayVisible,birthdayOccurrence,birthdayOnDate} from '../lib/birthdays';
 import {loadBirthdays} from '../lib/birthdays-api';
+import {greeting} from '../lib/greeting';
 import {Pencil} from 'lucide-react';
 import {Trophy} from 'lucide-react';
 import {Category,categoryInk} from '../lib/symbols';
@@ -45,6 +46,7 @@ const [form,setForm]=useState<Entry>(fresh());
 const [recurrenceEditor,setRecurrenceEditor]=useState(false);
 const [detail,setDetail]=useState<Entry|null>(null);
 useEffect(()=>{void refreshBirthdays();load();const timer=setInterval(()=>setNow(new Date()),30000);return()=>clearInterval(timer)},[]);
+useEffect(()=>{const refresh=()=>setNow(new Date()),visible=()=>{if(document.visibilityState==='visible')refresh()};window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',visible);return()=>{window.removeEventListener('focus',refresh);document.removeEventListener('visibilitychange',visible)}},[]);
 useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),3000);return()=>clearTimeout(t)},[toast]);
 const [dialogViewport,setDialogViewport]=useState<{height:number,top:number}|null>(null);
 useEffect(()=>{if(!modal){setDialogViewport(null);return}const vv=window.visualViewport;const sync=()=>setDialogViewport({height:vv?.height||window.innerHeight,top:vv?.offsetTop||0});sync();vv?.addEventListener('resize',sync);vv?.addEventListener('scroll',sync);window.addEventListener('resize',sync);return()=>{vv?.removeEventListener('resize',sync);vv?.removeEventListener('scroll',sync);window.removeEventListener('resize',sync)}},[modal]);
@@ -77,7 +79,7 @@ return <div className="app"><header className="topbar"><div className="brand">EN
 <main><div className={'intro editorial-hero '+(view==='home'?'':'compact')}>
 {view==='home'&&<div className="hero-collage" aria-hidden="true"/>}
 <p className="eyebrow">{view==='home'?`${weekday}, ${pretty(today)}`:view==='calendar'?'PÁGINAS DA VIDA':view==='routine'?'UM ESPAÇO SÓ TEU':view==='achievements'?'CADA PASSO CONTA':view==='categories'?'DO TEU JEITO':'NADA SE PERDE POR AQUI'}</p>
-<h1>{view==='home'?<><span>Bom dia,</span><span className="name">Martina<span className="greeting-dot">.</span></span></>:view==='calendar'?<>Tua vida,<br/><span className="name">na agenda.</span></>:view==='routine'?<>Pequenos passos.<br/><span className="name">Mais tu.</span></>:view==='achievements'?<>Olha o quanto<br/><span className="name">tu já fez.</span></>:view==='categories'?<>Cada coisa,<br/><span className="name">teu jeito.</span></>:<>Entre ideias<br/><span className="name">e lembretes.</span></>}</h1>
+<h1>{view==='home'?<><span>{greeting(now)},</span><span className="name">Martina<span className="greeting-dot">.</span></span></>:view==='calendar'?<>Tua vida,<br/><span className="name">na agenda.</span></>:view==='routine'?<>Pequenos passos.<br/><span className="name">Mais tu.</span></>:view==='achievements'?<>Olha o quanto<br/><span className="name">tu já fez.</span></>:view==='categories'?<>Cada coisa,<br/><span className="name">teu jeito.</span></>:<>Entre ideias<br/><span className="name">e lembretes.</span></>}</h1>
 <p className="subtitle">{view==='home'?'Hoje cabe o quê?':view==='calendar'?'Tem muita vida nesses dias.':view==='routine'?'Um dia de cada vez também é evolução.':view==='achievements'?'Tem muita conquista no teu caminho.':view==='categories'?'Categorias, recorrências e gente querida.':'Tudo que merece sair da tua cabeça.'}</p>
 <svg className="hero-squiggle" viewBox="0 0 150 12" aria-hidden="true"><path d="M2 7 Q10 -1 18 6 T34 6 T50 6 T66 6 T82 6 T98 6 T114 6 T130 6 T146 3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/></svg></div>
 
