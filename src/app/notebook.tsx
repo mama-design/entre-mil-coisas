@@ -20,6 +20,7 @@ import {Category,categoryInk} from '../lib/symbols';
 import {SymbolIcon} from './symbol';
 import {LayoutGrid,Cake,Repeat2,Tags} from 'lucide-react';
 import HabitPreview from './habit-preview';
+import Shopping from './shopping';
 import {Entry,dateKey,parse,daysBetween,expand} from '../lib/recurrence';
 const weekdayNames=['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
 const weekdayShort=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -90,6 +91,7 @@ return <div className="app"><header className="topbar"><div className="brand">EN
 <div className="week-strip">{Array.from({length:7},(_,i)=>{const d=new Date(now);d.setDate(d.getDate()+i);const key=dateKey(d);return <button key={key} className={homeDate===key?'active':''} aria-label={(i===0?'Hoje':i===1?'Amanhã':weekdayNames[d.getDay()])+', '+pretty(key)} aria-pressed={homeDate===key} aria-controls="day-agenda" onClick={()=>setHomeDate(key)}><small>{i===0?'HOJE':d.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','')}</small><strong>{d.getDate()}</strong><i style={{opacity:homeEntries.some(e=>e.date===key&&!e.done)?1:0}}/></button>})}</div>
 
 <section id="day-agenda" aria-label="Tarefas do dia" aria-live="polite"><div className="section-title"><h2>{homeDate===today?'Hoje':daysBetween(homeDate,today)===1?'Amanhã':weekdayNames[parse(homeDate).getDay()]}</h2><span>{todays.filter(e=>!e.done).length} {todays.filter(e=>!e.done).length===1?'tarefa':'tarefas'}</span><button className="section-add" aria-label="Anotar neste dia" onClick={()=>open(undefined,homeDate)}><Plus size={20}/></button></div>{cards(todays,homeDate===today?'Teu dia tem espaço. O que tu quer anotar?':'Nenhuma tarefa para '+pretty(homeDate)+'. Quer anotar alguma coisa?')}</section>
+<Shopping/>
 {items.some(e=>!e.date&&!e.done)&&<section className="todo-section"><div className="section-title"><h2>Pra fazer</h2><span>ATÉ TU CONCLUIR</span></div>{cards(items.filter(e=>!e.date&&!e.done),'')}</section>}
 {homeDate===today&&reminders.length>0&&<section className="reminders"><div className="section-title"><h2>Próximo</h2><span>{reminders.length}</span></div>{reminders.map(e=><button className="reminder" aria-label={'Ver detalhes de '+e.title} key={e.id+e.date} onClick={()=>setDetail(e)}><span className="little-star" style={{background:categories.find(c=>c.name===e.category)?.color||'#7d7d70',color:categoryInk(categories.find(c=>c.name===e.category)?.color||'#7d7d70')}}><SymbolIcon name={categories.find(c=>c.name===e.category)?.icon||'none'}/></span><span><small>{daysBetween(e.date,today)===1?'AMANHÃ':`DAQUI A ${daysBetween(e.date,today)} DIAS`} · {pretty(e.date)}</small><strong>{e.title}</strong><span className="task-category">{e.category||'Sem categoria'}</span><span className="reminder-date">{parse(e.date).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})} · {e.time||'Sem horário'}</span></span><ArrowUpRight size={18}/></button>)}</section>}
 {homeDate===today&&overdue.length>0&&<section><div className="section-title"><h2>Vamos resgatar?</h2><span>{overdue.length}</span></div>{cards(overdue,'')}</section>}
